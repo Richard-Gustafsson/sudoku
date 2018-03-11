@@ -1,11 +1,13 @@
 import React from 'react';
 import '../style/sudokuBoardStyle.css';
 
-const SudokuBoard = () => {
+const fillBoard = (props) => {
+  console.log("HAHAHAHDDHASHDASHDAS");
+}
 
-  const fillBoard = () => {
-    console.log("table");
-  }
+const SudokuBoard = (props) => {
+
+
 
   return (
     <div className="SudokuDiv">
@@ -113,7 +115,7 @@ const SudokuBoard = () => {
         </tbody>
       </table>
 
-      <button type="button" onClick={() => this.fillBoard}>Generate</button>
+      <button onClick={() => fillBoard()}>Generate</button>
     </div>
   );
 }
