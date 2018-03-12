@@ -31,30 +31,30 @@ export default class SudokuBoard extends Component {
     }
   }
 
-  checkRow = (val) => {
+  checkRow = (val, row) => {
 
-    console.log('test', this.state.array[0])
+    //console.log('test', this.state.array[0])
 
-    for(let i = 0; i < this.state.array[0].length; i++) {
-      if(this.state.array[0][i] === val) {
+    for(let i = 0; i < this.state.array[row].length; i++) {
+      if(this.state.array[row][i] === val) {
         return false;
       }
     }
     return true;
   }
 
-  checkColumn = (val) => {
+  checkColumn = (val, col) => {
     for(let i = 0; i < this.state.array.length; i++) {
       //console.log(this.state.array[i]);
-      if(this.state.array[i][0] === val) {
-        console.log("false", this.state.array[i]);
+      if(this.state.array[i][col] === val) {
+        //console.log("false", this.state.array[i]);
         return false;
       }
     }
     return true;
   }
 
-  checkSquare = (val, col, cow) => {
+  checkSquare = (val, col, row) => {
     let colCorner = 0;
     let rowCorner=0;
     let square = 3;
@@ -62,8 +62,9 @@ export default class SudokuBoard extends Component {
 
   }
 
-  checkIfOk = (val) => {
-    if(this.checkRow(val) && this.checkColumn(val)) {
+  checkIfOk = (val, row, col) => {
+    console.log('Inne i checkifOK med värdet: ', val)
+    if(this.checkRow(val, row) && this.checkColumn(val, col)) {
       console.log("Det gick bra");
       return true;
     }
@@ -75,11 +76,69 @@ export default class SudokuBoard extends Component {
 
   fillBoard = () => {
 
-    let min = Math.ceil(1);
-    let max = Math.floor(10);
-    let val = Math.floor(Math.random() * (max - min)) + min;
+    let i = 0;
+    let arr = this.state.array;
 
-    
+
+    let row = 0; //Rows that will be checked
+    let col = 0; //Columns that will be checked
+
+
+    // console.log('vad är detta', arr[0])
+    // console.log('vad är detta', this.state.array[0])
+    //
+    // for(let i = 0; i < arr[0].length; i++) {
+    //   console.log(arr[0][i]);
+    //   if(arr[0].indexOf(0) === i){
+    //     arr[0][i] = 5
+    //     this.setState({
+    //       array: arr
+    //     });
+    //   }
+    //
+    // }
+    // console.log('Emellan: ', arr[0]);
+
+     //while(i < this.state.array[0].length) {
+     while(i < this.state.array.length) {
+       let min = Math.ceil(1);
+       let max = Math.floor(10);
+       let val = Math.floor(Math.random() * (max - min)) + min;
+       console.log('testar ', val);
+
+        if(this.checkIfOk(val, row, col)) {
+       //   console.log('Kommer jag hit?')
+       //console.log('test 2', arr[i].length)
+
+          for(let j = 0; j < arr[i].length; j++) {
+       //     console.log('nästa...')
+            if(arr[i].indexOf(0) === j){
+              arr[i][j] = val
+              this.setState({
+                array: arr
+              });
+              i++;
+              row++;
+              col++;
+              break;
+            }
+          }
+       //
+       //
+        }
+     }
+
+
+
+    // for(let i = 0; i <= this.state.array[0].length; i++) {
+    //   let min = Math.ceil(1);
+    //   let max = Math.floor(10);
+    //   let val = Math.floor(Math.random() * (max - min)) + min;
+    //
+    //   if(this.checkIfOk(val) {
+    //
+    //   }
+    // }
     // let t = document.getElementById("sb");
     // let cell = document.getElementsByName('td')
     //
