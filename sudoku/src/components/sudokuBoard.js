@@ -18,9 +18,10 @@ export default class SudokuBoard extends Component {
     }
   }
 
+  /*This function will recive a random value and row value.
+  Then iterate trough the selected row and check if the value exist*/
   checkRow = (val, row) => {
     for(let i = 0; i < this.state.board[row].length; i++) {
-      console.log('På rad: ', row);
       if(this.state.board[row][i] === val) {
         return false;
       }
@@ -28,35 +29,39 @@ export default class SudokuBoard extends Component {
     return true;
   }
 
+  /*This function will recive a random value and column value.
+  Then iterate trough the the board and check selected column with the value on every row,
+  to see if the value exist*/
   checkColumn = (val, col) => {
     for(let i = 0; i < this.state.board.length; i++) {
-      console.log('På col: ', col);
       if(this.state.board[i][col] === val) {
-        console.log('Hittade samma värde i samma kolumn: ', col);
         return false;
       }
     }
     return true;
   }
 
+  /*This function will recive a random value and column- and row values
+  The function will find the 3x3 square that matches the values.*/
   checkSquare = (val, col, row) => {
     let colCorner = 0;
-    let rowCorner=0;
+    let rowCorner = 0;
     let square = 3;
 
+    //To find the left corner of the square
     while(col >= colCorner + square) {
       colCorner += square;
     }
 
+    //To find the upper row
     while(row >= rowCorner + square) {
       rowCorner += square;
     }
 
-    // Iterate through each row
+    // Iterate through each matching row
     for(let i = rowCorner; i < rowCorner + square; i++) {
-      // Iterate through each column
+      // Iterate through each matching column
       for(let j = colCorner; j < colCorner + square; j++) {
-        // Return false is a match is found
         if(this.state.board[i][j] === val) {
           return false;
         }
@@ -65,40 +70,40 @@ export default class SudokuBoard extends Component {
   return true;
   }
 
+  /*Purpose of this function is simply to call the evaluation functions
+  If the evaluation functions return true, it will return true.
+  (checkSquare not added yet)*/
   checkIfOk = (val, row, col) => {
-    console.log('Inne i checkifOK med värdet: ', val)
     if(this.checkRow(val, row) && this.checkColumn(val, col)) {
-      console.log("Det gick bra");
       return true;
     }
     else {
-      console.log("Det gick mindre bra");
       return false;
     }
   }
 
+  /*This function is called when "Generate"-button is clicked
+  It will iterate through the board and for every small square
+  it will check the row and column and eventually 3x3 square
+  (What is missing here is backtracking, that I did not complete)*/
   fillBoard = () => {
-    console.log('Kommer in i fillboard');
     let i = 0,
         row = 0,
-        col = 0,
         found,
         tempBoard = this.state.board;
 
+    //Iterate all rows on the board
     while(i < this.state.board.length) {
-      console.log('Är inne i första while-loopen');
-      let j = 0;
-      col = 0;
+      let j = 0,
+          col = 0;
 
+      //Iterate a row in the board
       while(j < this.state.board[row].length) {
         let min = Math.ceil(1),
             max = Math.floor(10),
             val = Math.floor(Math.random() * (max - min)) + min;
 
-        tempBoard.forEach(function(row) {
-          console.log(row.join());
-        });
-
+        //If checkValue returns true, the value will be set on the small square
         if(this.checkIfOk(val, row, col)) {
           tempBoard[i][j] = val;
           this.setState({board: tempBoard});
@@ -111,99 +116,16 @@ export default class SudokuBoard extends Component {
     }
   }
 
+  /*This was going to be my backtracking method, did not have
+  the time to finish it. It should check which values are left to
+  use in a row. Then calculate the the amount of tries left with the values left,
+  if the program could not find the value, then go back one square and change value.*/
   getValuesLeftInRow = (row) => {
-    
-  }
-  // fillBoard = () => {
-  //   console.log('Kommer in i fillboard');
-  //   let i = 0;
-  //   let row = 0; //Rows that will be checked
-  //   let col = 0; //Columns that will be checked
-  //   let tempBoard = this.state.board;
-  //
-  //   while(i < this.state.board.length) { //Här går jag igenom min yttersta board
-  //      console.log('Inne i första while-loopen ', i);
-  //     if(i === this.state.board.length) {
-  //       break;
-  //     }else {
-  //       let j = 0;
-  //       col = 0;
-  //
-  //       while(j < this.state.board[row].length) {
-  //         console.log('Inne i andra while-loopen ', j);
-  //         let min = Math.ceil(1);
-  //         let max = Math.floor(10);
-  //         let val = Math.floor(Math.random() * (max - min)) + min;
-  //
-  //         if(this.checkIfOk(val, row, col) == true) {
-  //           tempBoard[i][j] = val;
-  //           this.setState({
-  //             board : tempBoard
-  //           });
-  //           col++;
-  //           j++;
-  //         }
-  //       }
-  //
-  //       row++;
-  //       i++;
-  //     }
-  //   }
-  // }
 
-  solvePuzzle = () => {
-  // Variables to track our position in the solver
-  let limit = 9,
-      i, row, column, value, found;
-  let tempBoard = this.state.board;
-
-  for(i = 0; i < 81; i++) {
-    row = tempBoard[i];
-    column = tempBoard[i][0];
-    // Try the next value
-    value = tempBoard[row][column] + 1;
-    // Was a valid number found?
-    found = false;
-    // Keep trying new values until either the limit
-    // was reached or a valid value was found
-    while(!found && value <= limit) {
-      // If a valid value is found, mark found true,
-      // set the position to the value, and move to the
-      // next position
-      if(this.checkIfOk(value, row, column)) {
-        found = true;
-        tempBoard[row][column] = value;
-        i++;
-      }
-      // Otherwise, try the next value
-      else {
-        value++;
-      }
-    }
-    // If no valid value was found and the limit was
-    // reached, move back to the previous position
-    if(!found) {
-      tempBoard[row][column] = 0;
-      i--;
-    }
   }
 
-  // A solution was found! Log it
-  this.state.board.forEach(function(row) {
-    console.log(row.join());
-  });
-
-  // return the solution
-  this.setState({
-    board: tempBoard
-  });
-};
-
-
-
-
-
-
+  /*Renders a simple board layout on the screen. Could be done in a better way,
+  using a loop to create the layout, instead of doing it manually*/
   render() {
     return (
       <div className="SudokuDiv">
@@ -310,51 +232,8 @@ export default class SudokuBoard extends Component {
             </tr>
           </tbody>
         </table>
-
         <button onClick={() => this.fillBoard()}>Generate</button>
       </div>
     );
   }
 }
-
-// Inne i checkifOK med värdet:  1
-// 4sudokuBoard.js:23 På rad:  5
-// sudokuBoard.js:75 Det gick mindre bra
-// sudokuBoard.js:98 9,4,2,3,8,1,7,6,5
-// sudokuBoard.js:98 5,8,3,2,4,7,6,1,9
-// sudokuBoard.js:98 8,1,4,9,2,5,3,7,6
-// sudokuBoard.js:98 2,3,6,8,9,4,1,5,7
-// sudokuBoard.js:98 3,9,8,6,7,2,5,4,1
-// sudokuBoard.js:98 4,6,5,1,3,9,2,8,0
-// 3sudokuBoard.js:98 0,0,0,0,0,0,0,0,0
-// sudokuBoard.js:69 Inne i checkifOK med värdet:  4
-// sudokuBoard.js:23 På rad:  5
-// sudokuBoard.js:75 Det gick mindre bra
-// sudokuBoard.js:98 9,4,2,3,8,1,7,6,5
-// sudokuBoard.js:98 5,8,3,2,4,7,6,1,9
-// sudokuBoard.js:98 8,1,4,9,2,5,3,7,6
-// sudokuBoard.js:98 2,3,6,8,9,4,1,5,7
-// sudokuBoard.js:98 3,9,8,6,7,2,5,4,1
-// sudokuBoard.js:98 4,6,5,1,3,9,2,8,0
-// 3sudokuBoard.js:98 0,0,0,0,0,0,0,0,0
-// sudokuBoard.js:69 Inne i checkifOK med värdet:  4
-// sudokuBoard.js:23 På rad:  5
-// sudokuBoard.js:75 Det gick mindre bra
-// sudokuBoard.js:98 9,4,2,3,8,1,7,6,5
-// sudokuBoard.js:98 5,8,3,2,4,7,6,1,9
-// sudokuBoard.js:98 8,1,4,9,2,5,3,7,6
-// sudokuBoard.js:98 2,3,6,8,9,4,1,5,7
-// sudokuBoard.js:98 3,9,8,6,7,2,5,4,1
-// sudokuBoard.js:98 4,6,5,1,3,9,2,8,0
-// 3sudokuBoard.js:98 0,0,0,0,0,0,0,0,0
-// sudokuBoard.js:69 Inne i checkifOK med värdet:  8
-// 8sudokuBoard.js:23 På rad:  5
-// sudokuBoard.js:75 Det gick mindre bra
-// sudokuBoard.js:98 9,4,2,3,8,1,7,6,5
-// sudokuBoard.js:98 5,8,3,2,4,7,6,1,9
-// sudokuBoard.js:98 8,1,4,9,2,5,3,7,6
-// sudokuBoard.js:98 2,3,6,8,9,4,1,5,7
-// sudokuBoard.js:98 3,9,8,6,7,2,5,4,1
-// sudokuBoard.js:98 4,6,5,1,3,9,2,8,0
-// 3sudokuBoard.js:98 0,0,0,0,0,0,0,0,0
-// sudokuBoard.js:69 Inne i checkifOK med värdet:  2
